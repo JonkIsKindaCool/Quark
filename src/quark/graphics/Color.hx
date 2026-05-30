@@ -184,6 +184,7 @@ abstract Color(Int) from Int to Int {
 
 	public static function lerp(a:Color, b:Color, t:Float):Color {
 		t = t < 0 ? 0 : t > 1 ? 1 : t;
+		
 		return fromRGBA(Std.int(a.r + (b.r - a.r) * t), Std.int(a.g + (b.g - a.g) * t), Std.int(a.b + (b.b - a.b) * t), Std.int(a.a + (b.a - a.a) * t));
 	}
 

@@ -1,0 +1,21 @@
+{
+    "name": "Quark",
+    "url": "https://github.com/JonkIsKindaCool/Quark/",
+    "license": "MIT",
+    "tags": [
+        "cross",
+        "lime",
+        "game",
+        "opengl"
+    ],
+    "description": "A Simple OpenGL Wrapper for lime.",
+    "version": "1.0.0",
+    "classPath": "src/",
+    "releasenote": "Initial release.",
+    "contributors": [
+        "JonkIsKindaCool"
+    ],
+    "dependencies": {
+        "lime": ""
+    }
+}
