@@ -102,6 +102,10 @@ class Shader {
 		GL.uniformMatrix4fv(getUniformLocation(name), false, new Float32Array(matrix.toArray()));
 	}
 
+	public function setMat4Raw(name:String, data:Array<Float>) {
+		GL.uniformMatrix4fv(getUniformLocation(name), false, new Float32Array(data));
+	}
+
 	public inline function setFloatArray(name:String, values:Array<Float>):Void {
 		GL.uniform1fv(getUniformLocation(name), new Float32Array(values));
 	}

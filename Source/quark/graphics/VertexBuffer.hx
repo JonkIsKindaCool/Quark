@@ -100,4 +100,31 @@ class VertexBuffer {
 				GL.UNSIGNED_INT_10F_11F_11F_REV;
 		}
 	}
+
+	public function bindInstanced(shader:Shader, divisor:Int) {
+		GL.bindBuffer(GL.ARRAY_BUFFER, vbo);
+		var offset = 0;
+		for (i in 0...layout.attributes.length) {
+			var attr = layout.attributes[i];
+			var loc = GL.getAttribLocation(shader.program, attr.name);
+			if (loc < 0) {
+				offset += attr.size * VertexLayout.byteSizeOf(attr.type);
+				continue;
+			}
+			GL.enableVertexAttribArray(loc);
+			GL.vertexAttribPointer(loc, attr.size, toGLType(attr.type), attr.normalized, layout.stride, offset);
+			GL.vertexAttribDivisor(loc, divisor); // 0 = por vértice, 1 = por instancia
+			offset += attr.size * VertexLayout.byteSizeOf(attr.type);
+		}
+	}
+
+	public function unbindInstanced(shader:Shader) {
+		for (attr in (layout : Array<Dynamic>)) {
+			var loc = GL.getAttribLocation(shader.program, attr.name);
+			if (loc >= 0) {
+				GL.vertexAttribDivisor(loc, 0); // resetear divisor
+				GL.disableVertexAttribArray(loc);
+			}
+		}
+	}
 }

@@ -197,7 +197,6 @@ abstract Color(Int) from Int to Int {
 		return fromFloats(c.rf * s, c.gf * s, c.bf * s, c.af);
 	}
 
-	// mismo color con alpha distinto
 	public inline function withAlpha(newAlpha:Int):Color {
 		return fromRGBA(r, g, b, newAlpha);
 	}
