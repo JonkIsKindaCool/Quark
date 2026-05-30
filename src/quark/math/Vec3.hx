@@ -126,7 +126,7 @@ abstract Vec3(BaseVec3) from BaseVec3 to BaseVec3 {
 
 	public inline function transformMat4(m:Mat4):Vec3 {
 		var d = m.data;
-		
+
 		var w:Float = d[3] * this.x + d[7] * this.y + d[11] * this.z + d[15];
 
 		w = w == 0 ? 1 : w;

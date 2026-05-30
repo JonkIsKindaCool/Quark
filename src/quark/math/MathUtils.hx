@@ -86,4 +86,17 @@ class MathUtils {
 
 	public static inline function toRad(deg:Float):Float
 		return deg * Math.PI / 180.0;
+
+	public static inline function perpendicular(v:Vec3):Vec3 {
+		var ax:Float = Math.abs(v.x);
+		var ay:Float = Math.abs(v.y);
+		var az:Float = Math.abs(v.z);
+		
+		if (ax <= ay && ax <= az)
+			return new Vec3(0, -v.z, v.y).normalized;
+		else if (ay <= az)
+			return new Vec3(-v.z, 0, v.x).normalized;
+		else
+			return new Vec3(-v.y, v.x, 0).normalized;
+	}
 }
