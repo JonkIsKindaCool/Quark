@@ -110,6 +110,70 @@ abstract Mat4(BaseMat4) from BaseMat4 to BaseMat4 {
 		return
 			'Mat4(\n  ${d[0]} ${d[4]} ${d[8]} ${d[12]}\n  ${d[1]} ${d[5]} ${d[9]} ${d[13]}\n  ${d[2]} ${d[6]} ${d[10]} ${d[14]}\n  ${d[3]} ${d[7]} ${d[11]} ${d[15]}\n)';
 	}
+
+	public static inline function ortho(left:Float, right:Float, bottom:Float, top:Float, near:Float = -1, far:Float = 1):Mat4 {
+		var rl:Float = 1.0 / (right - left);
+		var tb:Float = 1.0 / (top - bottom);
+		var fn:Float = 1.0 / (far - near);
+		return new Mat4(2 * rl, 0, 0, 0, 0, 2 * tb, 0, 0, 0, 0, -2 * fn, 0, -(right + left) * rl, -(top + bottom) * tb, -(far + near) * fn, 1);
+	}
+
+	public static function trs(translation:Vec3, rotation:Quat, scale:Vec3):Mat4 {
+		var x:Float = rotation.x, y = rotation.y, z = rotation.z, w = rotation.w;
+		var x2:Float = x + x, y2 = y + y, z2 = z + z;
+		var xx:Float = x * x2, xy = x * y2, xz = x * z2;
+		var yy:Float = y * y2, yz = y * z2, zz = z * z2;
+		var wx:Float = w * x2, wy = w * y2, wz = w * z2;
+		var sx:Float = scale.x, sy = scale.y, sz = scale.z;
+		
+		return new Mat4((1 - (yy + zz)) * sx, (xy + wz) * sx, (xz - wy) * sx, 0, (xy - wz) * sy, (1 - (xx + zz)) * sy, (yz + wx) * sy, 0, (xz + wy) * sz,
+			(yz - wx) * sz, (1 - (xx + yy)) * sz, 0, translation.x, translation.y, translation.z, 1);
+	}
+
+	public static function inverseTRS(translation:Vec3, rotation:Quat, scale:Vec3):Mat4 {
+		return trs(translation, rotation, scale).affineInverse();
+	}
+
+	public inline function affineInverse():Mat4 {
+		var d = this.data;
+
+		var t00:Float = d[0], t01 = d[4], t02 = d[8];
+		var t10:Float = d[1], t11 = d[5], t12 = d[9];
+		var t20:Float = d[2], t21 = d[6], t22 = d[10];
+
+		var tx:Float = -(t00 * d[12] + t10 * d[13] + t20 * d[14]);
+		var ty:Float = -(t01 * d[12] + t11 * d[13] + t21 * d[14]);
+		var tz:Float = -(t02 * d[12] + t12 * d[13] + t22 * d[14]);
+
+		return new Mat4(t00, t01, t02, 0, t10, t11, t12, 0, t20, t21, t22, 0, tx, ty, tz, 1);
+	}
+
+	public inline function getTranslation():Vec3
+		return new Vec3(this.data[12], this.data[13], this.data[14]);
+
+	public inline function getScaleVec():Vec3 {
+		var d = this.data;
+		return new Vec3(Math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]), Math.sqrt(d[4] * d[4] + d[5] * d[5] + d[6] * d[6]),
+			Math.sqrt(d[8] * d[8] + d[9] * d[9] + d[10] * d[10]));
+	}
+
+	public inline function transformPoint(v:Vec3):Vec3 {
+		var d = this.data;
+		var w = d[3] * v.x + d[7] * v.y + d[11] * v.z + d[15];
+		w = w == 0 ? 1 : w;
+		return new Vec3((d[0] * v.x + d[4] * v.y + d[8] * v.z + d[12]) / w, (d[1] * v.x + d[5] * v.y + d[9] * v.z + d[13]) / w,
+			(d[2] * v.x + d[6] * v.y + d[10] * v.z + d[14]) / w);
+	}
+
+	public inline function transformDirection(v:Vec3):Vec3 {
+		var d = this.data;
+		return new Vec3(d[0] * v.x + d[4] * v.y + d[8] * v.z, d[1] * v.x + d[5] * v.y + d[9] * v.z, d[2] * v.x + d[6] * v.y + d[10] * v.z);
+	}
+
+	public inline function toMat3():Mat3 {
+		var d = this.data;
+		return new Mat3(d[0], d[1], d[2], d[4], d[5], d[6], d[8], d[9], d[10]);
+	}
 }
 
 @:structInit

@@ -1,5 +1,6 @@
 package quark.app;
 
+import lime.graphics.WebGL2RenderContext;
 import lime.ui.Touch;
 import lime.ui.Window;
 import lime.app.Application;
@@ -13,6 +14,14 @@ import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
 
 class App {
+	public static var GL(get, never):WebGL2RenderContext;
+
+	private static var _initialized:Bool = false;
+
+	private static function get_GL() {
+		return #if sys App.context.gl #else App.context #end;
+	}
+
 	public static var context:RenderContext;
 	public static var instance:App;
 
@@ -22,11 +31,28 @@ class App {
 		var win:Window = Application.current.window;
 
 		Application.current.onUpdate.add(dt -> {
+			if (!_initialized) {
+				return;
+			}
+
 			instance.onUpdate(dt / 1000.0);
 		});
 
 		win.onRender.add(ctx -> {
 			App.context = ctx;
+
+			if (GL == null)
+				return;
+
+			if (!_initialized) {
+				instance.onCreate();
+
+				trace(GL);
+
+				_initialized = true;
+				return;
+			}
+
 			instance.onRender(ctx);
 		});
 
@@ -59,8 +85,6 @@ class App {
 		});
 
 		Application.current.onExit.add(code -> instance.onExit(code));
-
-		instance.onCreate();
 	}
 
 	public function new() {}

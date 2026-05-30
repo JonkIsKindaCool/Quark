@@ -87,6 +87,77 @@ abstract Quat(BaseQuat) from BaseQuat to BaseQuat {
 
 	public inline function toString():String
 		return 'Quat(${this.x}, ${this.y}, ${this.z}, ${this.w})';
+
+	public static function fromEuler(x:Float, y:Float, z:Float):Quat {
+		var cx = Math.cos(x * 0.5), sx = Math.sin(x * 0.5);
+		var cy = Math.cos(y * 0.5), sy = Math.sin(y * 0.5);
+		var cz = Math.cos(z * 0.5), sz = Math.sin(z * 0.5);
+		return new Quat(sx * cy * cz + cx * sy * sz, cx * sy * cz - sx * cy * sz, cx * cy * sz + sx * sy * cz, cx * cy * cz - sx * sy * sz);
+	}
+
+	@:to
+	public inline function toMat4():Mat4 {
+		var xx:Float = this.x * this.x, yy = this.y * this.y, zz = this.z * this.z;
+		var xy:Float = this.x * this.y, xz = this.x * this.z, yz = this.y * this.z;
+		var wx:Float = this.w * this.x, wy = this.w * this.y, wz = this.w * this.z;
+
+		return new Mat4(1
+			- 2 * (yy + zz), 2 * (xy + wz), 2 * (xz - wy), 0, 2 * (xy - wz), 1
+			- 2 * (xx + zz), 2 * (yz + wx), 0, 2 * (xz + wy), 2 * (yz - wx),
+			1
+			- 2 * (xx + yy), 0, 0, 0, 0, 1);
+	}
+
+	public inline function toEuler():Vec3 {
+		var sinX :Float= 2 * (this.w * this.x + this.y * this.z);
+		var cosX :Float= 1 - 2 * (this.x * this.x + this.y * this.y);
+
+		var sinY :Float= 2 * (this.w * this.y - this.z * this.x);
+
+		var sinZ :Float= 2 * (this.w * this.z + this.x * this.y);
+		var cosZ :Float= 1 - 2 * (this.y * this.y + this.z * this.z);
+
+		return new Vec3(Math.atan2(sinX, cosX), Math.abs(sinY) >= 1 ? Math.PI / 2 * MathUtils.sign(sinY) : Math.asin(sinY), Math.atan2(sinZ, cosZ));
+	}
+
+	public static function slerp(a:Quat, b:Quat, t:Float):Quat {
+		var dot:Float = a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
+
+		var bx:Float = b.x, by = b.y, bz = b.z, bw = b.w;
+		if (dot < 0) {
+			dot = -dot;
+			bx = -bx;
+			by = -by;
+			bz = -bz;
+			bw = -bw;
+		}
+
+		if (dot > 0.9995)
+			return a.lerp(new Quat(bx, by, bz, bw), t);
+
+		var angle:Float = Math.acos(dot);
+		var sinA:Float = Math.sin((1 - t) * angle);
+		var sinB:Float = Math.sin(t * angle);
+		var sinTotal:Float = Math.sin(angle);
+
+		return new Quat((a.x * sinA + bx * sinB) / sinTotal, (a.y * sinA + by * sinB) / sinTotal, (a.z * sinA + bz * sinB) / sinTotal,
+			(a.w * sinA + bw * sinB) / sinTotal);
+	}
+
+	public inline function dot(other:Quat):Float
+		return this.x * other.x + this.y * other.y + this.z * other.z + this.w * other.w;
+
+	public static inline function angleBetween(a:Quat, b:Quat):Float {
+		var d = MathUtils.clamp(Math.abs(a.dot(b)), -1, 1);
+		return Math.acos(2 * d * d - 1);
+	}
+
+	public static function rotateToward(from:Quat, to:Quat, maxAngle:Float):Quat {
+		var angle = angleBetween(from, to);
+		if (angle < 1e-6)
+			return to;
+		return slerp(from, to, Math.min(1, maxAngle / angle));
+	}
 }
 
 @:structInit

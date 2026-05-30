@@ -123,6 +123,62 @@ abstract Vec3(BaseVec3) from BaseVec3 to BaseVec3 {
 
 	public inline function toString():String
 		return 'Vec3(${this.x}, ${this.y}, ${this.z})';
+
+	public inline function transformMat4(m:Mat4):Vec3 {
+		var d = m.data;
+		
+		var w:Float = d[3] * this.x + d[7] * this.y + d[11] * this.z + d[15];
+
+		w = w == 0 ? 1 : w;
+
+		return new Vec3((d[0] * this.x + d[4] * this.y + d[8] * this.z + d[12]) / w, (d[1] * this.x + d[5] * this.y + d[9] * this.z + d[13]) / w,
+			(d[2] * this.x + d[6] * this.y + d[10] * this.z + d[14]) / w);
+	}
+
+	public inline function transformMat4Direction(m:Mat4):Vec3 {
+		var d = m.data;
+		return new Vec3(d[0] * this.x + d[4] * this.y + d[8] * this.z, d[1] * this.x + d[5] * this.y + d[9] * this.z,
+			d[2] * this.x + d[6] * this.y + d[10] * this.z);
+	}
+
+	public inline function transformMat3(m:Mat3):Vec3 {
+		var d = m.data;
+		return new Vec3(d[0] * this.x + d[3] * this.y + d[6] * this.z, d[1] * this.x + d[4] * this.y + d[7] * this.z,
+			d[2] * this.x + d[5] * this.y + d[8] * this.z);
+	}
+
+	public inline function moveToward(target:Vec3, maxDelta:Float):Vec3 {
+		var d:Vec3 = target - (this : Vec3);
+		var len:Float = d.magnitude;
+
+		return len <= maxDelta ? target : (this : Vec3) + d / len * maxDelta;
+	}
+
+	public static function slerp(a:Vec3, b:Vec3, t:Float):Vec3 {
+		var dot:Float = MathUtils.clamp(a.normalized.dot(b.normalized), -1.0, 1.0);
+		var angle:Float = Math.acos(dot);
+
+		if (Math.abs(angle) < 1e-6)
+			return a.lerp(b, t);
+
+		var sinA:Float = Math.sin((1 - t) * angle);
+		var sinB:Float = Math.sin(t * angle);
+		var sinTotal:Float = Math.sin(angle);
+
+		return a * (sinA / sinTotal) + b * (sinB / sinTotal);
+	}
+
+	public inline function decompose(normal:Vec3):{parallel:Vec3, perpendicular:Vec3} {
+		var para:Vec3 = normal * dot(normal);
+
+		return {parallel: para, perpendicular: (this : Vec3) - para};
+	}
+
+	public inline function toVec4(w:Float = 1):Vec4
+		return new Vec4(this.x, this.y, this.z, w);
+
+	public inline function toVec2():Vec2
+		return new Vec2(this.x, this.y);
 }
 
 @:structInit

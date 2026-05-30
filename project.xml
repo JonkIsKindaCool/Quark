@@ -4,7 +4,7 @@
 	<meta title="Quark" package="org.jonk.quark" version="1.0.0" company="Jonk" />
 	<app main="Main" path="Export" file="TextRendering" />
 	
-	<window width="800" height="600" fps="60" hardware="false" />
+	<window width="800" height="600" fps="60"/>
 	
 	<source path="Source" />
 	

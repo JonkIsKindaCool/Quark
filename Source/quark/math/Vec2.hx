@@ -44,10 +44,10 @@ abstract Vec2(BaseVec2) from BaseVec2 to BaseVec2 {
 		return Math.atan2(this.y, this.x);
 
 	inline function get_perp():Vec2
-		return new Vec2(-this.y, this.x); 
+		return new Vec2(-this.y, this.x);
 
 	inline function get_perpHor():Vec2
-		return new Vec2(this.y, -this.x); 
+		return new Vec2(this.y, -this.x);
 
 	@:op(A + B) public inline function add(other:Vec2):Vec2 {
 		return new Vec2(this.x + other.x, this.y + other.y);
@@ -165,6 +165,48 @@ abstract Vec2(BaseVec2) from BaseVec2 to BaseVec2 {
 	public inline function toPolar():{r:Float, angle:Float} {
 		return {r: magnitude, angle: (this : Vec2).angle};
 	}
+
+	public inline function transformMat3(m:Mat3):Vec2 {
+		var d = m.data;
+		
+		return new Vec2(d[0] * this.x + d[3] * this.y + d[6], d[1] * this.x + d[4] * this.y + d[7]);
+	}
+
+	public inline function transformMat3Direction(m:Mat3):Vec2 {
+		var d = m.data;
+
+		return new Vec2(d[0] * this.x + d[3] * this.y, d[1] * this.x + d[4] * this.y);
+	}
+
+	public inline function snapToGrid(gridSize:Float):Vec2 {
+		return new Vec2(Math.round(this.x / gridSize) * gridSize, Math.round(this.y / gridSize) * gridSize);
+	}
+
+	public inline function moveToward(target:Vec2, maxDelta:Float):Vec2 {
+		var d:Vec2 = target - (this : Vec2);
+		var len:Float = d.magnitude;
+
+		return len <= maxDelta ? target : (this : Vec2) + d / len * maxDelta;
+	}
+
+	public static function slerp(a:Vec2, b:Vec2, t:Float):Vec2 {
+		var angle:Float = a.angleBetween(b);
+
+		if (Math.abs(angle) < 1e-6)
+			return a.lerp(b, t);
+
+		var sinA:Float = Math.sin((1 - t) * angle);
+		var sinB:Float = Math.sin(t * angle);
+		var sinTotal:Float = Math.sin(angle);
+
+		return a * (sinA / sinTotal) + b * (sinB / sinTotal);
+	}
+
+	public inline function toVec3(z:Float = 0):Vec3
+		return new Vec3(this.x, this.y, z);
+
+	public inline function isInCircle(center:Vec2, radius:Float):Bool
+		return distanceSqTo(center) <= radius * radius;
 
 	public inline function toString():String {
 		return 'Vec2(${this.x}, ${this.y})';
