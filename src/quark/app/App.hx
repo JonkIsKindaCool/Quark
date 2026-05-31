@@ -21,7 +21,6 @@ import lime.ui.GamepadButton;
  * `App.run()`.
  */
 class App {
-
 	/**
 	 * Main OpenGL context used by Quark.
 	 *
@@ -46,7 +45,7 @@ class App {
 	/**
 	 * Currently running application instance.
 	 */
-	public static var instance:App;
+	public static var instance(default, null):App;
 
 	/**
 	 * Starts a Quark application.
@@ -57,7 +56,7 @@ class App {
 	 * @throws String If another application is already running.
 	 */
 	public static function run(app:App) {
-		if (instance != null){
+		if (instance != null) {
 			throw 'Cannot have 2 quark applications running at the same time';
 		}
 

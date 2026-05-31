@@ -1,4 +1,4 @@
-package quark.graphics;
+package quark.graphics.vertex;
 
 /**
  * Supported vertex attribute data types.

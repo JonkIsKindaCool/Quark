@@ -7,12 +7,10 @@ import quark.math.Mat4;
 import quark.graphics.Texture;
 import lime.graphics.Image;
 import lime.utils.UInt32Array;
-import quark.graphics.VertexLayout;
 import lime.utils.Float32Array;
-import quark.graphics.IndexBuffer;
-import quark.graphics.VertexBuffer;
+import lime.graphics.opengl.GL;
 import quark.graphics.Shader;
-import quark.graphics.Color;
+import quark.utils.Color;
 import lime.graphics.RenderContext;
 import quark.app.App;
 
@@ -48,8 +46,8 @@ class Game extends App {
 
 		var color:Color = ctx.attributes.background;
 
-		App.GL.clearColor(color.rf, color.gf, color.bf, color.af);
-		App.GL.clear(App.GL.COLOR_BUFFER_BIT);
+		GL.clearColor(color.rf, color.gf, color.bf, color.af);
+		GL.clear(GL.COLOR_BUFFER_BIT);
 
 		if (tex != null) {
 			for (pos in pos) {
@@ -65,11 +63,12 @@ class Game extends App {
 
 		projection = Mat4.ortho(0, width, height, 0, -1000, 1000);
 
-		App.GL.viewport(0, 0, width, height);
+		GL.viewport(0, 0, width, height);
 	}
 
 	override function onClose() {
 		super.onClose();
+		tex.dispose();
 		Batcher.dispose();
 	}
 }

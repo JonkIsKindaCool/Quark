@@ -1,4 +1,4 @@
-package quark.graphics;
+package quark.graphics.vertex;
 
 /**
  * Describes a single vertex attribute within a vertex layout.

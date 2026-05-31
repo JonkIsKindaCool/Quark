@@ -1,29 +1,30 @@
 package;
 
-import quark.graphics.Texture;
 import lime.graphics.Image;
-import lime.utils.UInt32Array;
-import quark.graphics.VertexLayout;
-import lime.utils.Float32Array;
-import lime.utils.Assets;
-import quark.graphics.IndexBuffer;
-import quark.graphics.VertexBuffer;
-import quark.graphics.Shader;
-import quark.graphics.Color;
 import lime.graphics.RenderContext;
+import lime.graphics.opengl.GL;
+import lime.utils.Float32Array;
+import lime.utils.UInt32Array;
 import quark.app.App;
+import quark.utils.Color;
+import quark.graphics.Shader;
+import quark.graphics.Texture;
+import quark.graphics.buffer.VertexBuffer;
+import quark.graphics.buffer.IndexBuffer;
+import quark.graphics.vertex.VertexArray;
+import quark.graphics.vertex.VertexLayout;
 
 class Game extends App {
 	var shader:Shader;
-	var vertex:VertexBuffer;
-	var index:IndexBuffer;
+
+	var vao:VertexArray;
+	var vbo:VertexBuffer;
+	var ibo:IndexBuffer;
 
 	var texture:Texture;
 
-	override function onCreate() {
-		super.onCreate();
-
-		Image.loadFromFile("assets/test.png").onComplete(img -> {
+	override function onCreate():Void {
+		Image.loadFromFile("assets/test.png").onComplete(image -> {
 			var vertSrc:String = "#version 300 es
 
 		in vec2 position;
@@ -53,50 +54,66 @@ class Game extends App {
 
 			shader = new Shader(vertSrc, fragSrc);
 
-			vertex = new VertexBuffer(new Float32Array([
+			vbo = new VertexBuffer(new Float32Array([
 				-0.5, -0.5, 0, 1,
 				 0.5, -0.5, 1, 1,
 				-0.5,  0.5, 0, 0,
-				 0.5,  0.5, 1, 0,
-			]), VertexLayout.POS2_UV2);
+				 0.5,  0.5, 1, 0
+			]));
 
-			index = new IndexBuffer(new UInt32Array([0, 1, 2, 1, 2, 3]));
+			ibo = new IndexBuffer(new UInt32Array([
+				0, 1, 2,
+				1, 3, 2
+			]));
 
-			texture = new Texture(img);
+			vao = new VertexArray();
+
+			vao.addBuffer(vbo, VertexLayout.POS2_UV2);
+
+			vao.setIndexBuffer(ibo);
+
+			texture = new Texture(image);
 		});
 	}
 
-	override function onRender(ctx:RenderContext) {
-		super.onRender(ctx);
-
+	override function onRender(ctx:RenderContext):Void {
 		var color:Color = ctx.attributes.background;
 
-		App.GL.clearColor(color.rf, color.gf, color.bf, color.af);
-		App.GL.clear(App.GL.COLOR_BUFFER_BIT);
+		GL.clearColor(color.rf, color.gf, color.bf, color.af);
 
-		if (texture != null) {
-			texture.bind();
+		GL.clear(GL.COLOR_BUFFER_BIT);
 
-			shader.bind();
-			shader.setTexture("tex", 0);
-			vertex.bind();
-			index.bind();
+		if (texture == null)
+			return;
 
-			App.GL.drawElements(App.GL.TRIANGLES, index.count, App.GL.UNSIGNED_INT, 0);
-		}
+		shader.bind();
+
+		texture.bind(0);
+		shader.setTexture("tex", 0);
+
+		vao.bind();
+
+		GL.drawElements(GL.TRIANGLES, ibo.count, GL.UNSIGNED_INT, 0);
 	}
 
-	override function onClose() {
-		super.onClose();
-		shader.dispose();
-		vertex.dispose();
-		index.dispose();
-
-		texture.destroy();
+	override function onResize(width:Int, height:Int):Void {
+		GL.viewport(0, 0, width, height);
 	}
 
-	override function onResize(width:Int, height:Int) {
-		super.onResize(width, height);
-		App.GL.viewport(0, 0, width, height);
+	override function onClose():Void {
+		if (texture != null)
+			texture.dispose();
+
+		if (vao != null)
+			vao.dispose();
+
+		if (vbo != null)
+			vbo.dispose();
+
+		if (ibo != null)
+			ibo.dispose();
+
+		if (shader != null)
+			shader.dispose();
 	}
 }

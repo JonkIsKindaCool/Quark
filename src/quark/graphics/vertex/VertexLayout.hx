@@ -1,6 +1,6 @@
-package quark.graphics;
+package quark.graphics.vertex;
 
-import quark.graphics.VertexAttributeType;
+import quark.graphics.vertex.VertexAttributeType;
 
 /**
  * Describes the structure of a vertex.

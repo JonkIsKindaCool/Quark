@@ -1,5 +1,6 @@
 package quark.graphics;
 
+import quark.utils.IDisposable;
 import lime.utils.Float32Array;
 import quark.math.Vec4;
 import quark.math.Vec3;
@@ -15,7 +16,7 @@ import lime.graphics.opengl.GLUniformLocation;
  * Provides utilities for binding the program, accessing attributes,
  * caching uniform locations and uploading uniform values.
  */
-class Shader {
+class Shader implements IDisposable {
 
 	/**
 	 * Native OpenGL shader program.

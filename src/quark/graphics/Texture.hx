@@ -1,12 +1,13 @@
 package quark.graphics;
 
+import quark.utils.IDisposable;
 import lime.graphics.ImageBuffer;
 import lime.utils.UInt8Array;
 import lime.graphics.Image;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLTexture;
 import haxe.extern.EitherType;
-import quark.graphics.TextureOptions;
+import quark.graphics.texture.*;
 import haxe.io.Bytes;
 
 /**
@@ -15,7 +16,7 @@ import haxe.io.Bytes;
  * Supports loading from images, raw bytes, dynamic uploads,
  * mipmap generation and runtime texture configuration.
  */
-class Texture {
+class Texture implements IDisposable{
 
 	/**
 	 * Native OpenGL texture handle.
@@ -193,7 +194,7 @@ class Texture {
 	 *
 	 * The texture should not be used after destruction.
 	 */
-	public function destroy():Void {
+	public function dispose():Void {
 		GL.deleteTexture(_internal);
 		_internal = null;
 	}

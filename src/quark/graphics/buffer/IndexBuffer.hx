@@ -1,5 +1,6 @@
-package quark.graphics;
+package quark.graphics.buffer;
 
+import quark.utils.IDisposable;
 import lime.utils.ArrayBufferView;
 import lime.graphics.opengl.GL;
 import lime.graphics.opengl.GLBuffer;
@@ -10,7 +11,7 @@ import lime.graphics.opengl.GLBuffer;
  * Index buffers store vertex indices used by draw calls such as
  * `glDrawElements`, allowing vertices to be reused efficiently.
  */
-class IndexBuffer {
+class IndexBuffer implements IDisposable{
 
 	/**
 	 * Native OpenGL buffer handle.

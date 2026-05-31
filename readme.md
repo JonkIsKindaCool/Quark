@@ -1,194 +1,397 @@
 # ⚛ Quark
 
-> A lightweight OpenGL wrapper built on top of [Lime](https://github.com/openfl/lime), designed to make low-level rendering approachable without hiding what's happening underneath.
+> A lightweight graphics library built on top of Lime, providing modern OpenGL abstractions without hiding the underlying API.
 
 ---
 
-## What is Quark?
+## Overview
 
-Quark is the fundamental building block — hence the name. It sits directly on top of Lime's OpenGL context and provides a clean, structured entry point for render loops, lifecycle management, and math utilities, so you can focus on what you're actually building instead of wiring up boilerplate.
+Quark is a low-level rendering toolkit for Haxe.
 
-It is **not** a game framework. It does not manage scenes, entities, or assets. That's a job for the layers above it.
+It sits directly above Lime's OpenGL context and provides a clean, typed API for common graphics operations such as:
+
+* Shader compilation and management
+* Vertex and index buffers
+* Vertex array objects
+* Textures and cubemaps
+* Framebuffers and render targets
+* Render state configuration
+* Math utilities
+
+Quark is intentionally small.
+
+It does not attempt to be a game engine, scene graph, ECS, renderer, or asset pipeline.
+
+Its goal is to make OpenGL easier to work with while keeping the underlying concepts visible and accessible.
 
 ---
 
-## Why Lime?
+## Philosophy
 
-Lime already solves the hard cross-platform problem: it provides an OpenGL context on Desktop (Windows, macOS, Linux), Web (HTML5/WebGL), Mobile (iOS, Android), and consoles. Quark doesn't reinvent that — it wraps the surface Lime exposes and makes it ergonomic to work with from Haxe.
+Quark follows a few simple principles:
+
+### Stay close to OpenGL
+
+If you already know OpenGL, Quark should feel familiar.
+
+```haxe
+var vao = new VertexArray();
+var vbo = new VertexBuffer(vertices);
+var shader = new Shader(vertexSrc, fragmentSrc);
+
+```
+
+The library wraps OpenGL objects rather than replacing them with a completely different rendering model.
+
+---
+
+### Provide type safety
+
+Instead of passing raw OpenGL constants everywhere:
+
+```haxe
+GL.texParameteri(
+    GL.TEXTURE_2D,
+    GL.TEXTURE_MIN_FILTER,
+    GL.LINEAR
+);
+
+```
+
+you work with typed APIs:
+
+```haxe
+texture.setFilter(
+    TextureFilter.LINEAR,
+    TextureFilter.LINEAR
+);
+
+```
+
+---
+
+### Build foundations, not frameworks
+
+Quark provides the rendering primitives.
+
+Everything above that layer is left to the user.
+
+---
+
+## Features
+
+### Application Framework
+
+A lightweight application lifecycle built on top of Lime. You can override any of these callbacks in your custom `App` class:
+
+#### Lifecycle & Rendering
+
+* `onCreate()`: Called once after the graphics context has been created. Ideal for initializing resources.
+* `onUpdate(dt:Float)`: Called every frame before rendering. Passes the delta time in seconds.
+* `onRender(ctx:RenderContext)`: Called every frame to render the application.
+* `onExit(code:Int)`: Called before the application exits, providing the status code.
+
+#### Window Management
+
+* `onResize(width:Int, height:Int)`: Called when the window is resized.
+* `onMove(x:Float, y:Float)`: Called when the window position changes.
+* `onFocus()`: Called when the application gains focus.
+* `onBlur()`: Called when the application loses focus.
+* `onFullscreen()`: Called when fullscreen mode is entered or toggled.
+* `onClose()`: Called when the window is requested to close.
+
+#### Keyboard Input
+
+* `onKeyDown(key:KeyCode, modifier:KeyModifier)`: Called when a key is pressed.
+* `onKeyUp(key:KeyCode, modifier:KeyModifier)`: Called when a key is released.
+* `onTextInput(text:String)`: Called when raw text input is received.
+
+#### Mouse Input
+
+* `onMouseMove(x:Float, y:Float)`: Called when the mouse moves.
+* `onMouseMoveRelative(dx:Float, dy:Float)`: Called when the mouse moves in relative mode (raw movement).
+* `onMouseDown(x:Float, y:Float, button:MouseButton)`: Called when a mouse button is pressed.
+* `onMouseUp(x:Float, y:Float, button:MouseButton)`: Called when a mouse button is released.
+* `onMouseWheel(dx:Float, dy:Float, mode:MouseWheelMode)`: Called when the mouse wheel is moved.
+
+#### Gamepad Input
+
+* `onGamepadConnect(gamepad:Gamepad)`: Called when a gamepad is connected.
+* `onGamepadAxis(gamepad:Gamepad, axis:GamepadAxis, value:Float)`: Called when a gamepad axis changes.
+* `onGamepadButtonDown(gamepad:Gamepad, button:GamepadButton)`: Called when a gamepad button is pressed.
+* `onGamepadButtonUp(gamepad:Gamepad, button:GamepadButton)`: Called when a gamepad button is released.
+
+#### Touch Input
+
+* `onTouchStart(touch:Touch)`: Called when a touch begins.
+* `onTouchMove(touch:Touch)`: Called when a touch moves.
+* `onTouchEnd(touch:Touch)`: Called when a touch ends.
+
+---
+
+### Graphics
+
+#### Shaders
+
+* GLSL shader compilation
+* Uniform management
+* Automatic type helpers
+
+#### Buffers
+
+* VertexBuffer
+* IndexBuffer
+* UniformBuffer
+
+#### Vertex Objects
+
+* VertexArray
+* VertexLayout
+* VertexAttribute
+
+#### Textures
+
+* Texture
+* Cubemap
+* Texture filtering
+* Texture wrapping
+* Mipmap generation
+
+#### Render Targets
+
+* Framebuffer
+* Renderbuffer
+
+---
+
+### Mathematics
+
+Included math types:
+
+```text
+Vec2
+Vec3
+Vec4
+
+Mat3
+Mat4
+
+Quat
+
+Rect
+Color
+
+```
+
+Utility functions:
+
+```text
+lerp
+clamp
+remap
+distance
+toRadians
+toDegrees
+
+```
+
+and more.
 
 ---
 
 ## Installation
 
+Install through Haxelib:
+
 ```bash
 haxelib install quark
+
 ```
 
-Or via git for the latest version:
+Or use the latest development version:
 
 ```bash
 haxelib git quark https://github.com/JonkIsKindaCool/quark
+
 ```
 
-Add it to your `project.xml`:
+Add Quark and Lime to your project:
 
 ```xml
 <haxelib name="quark" />
 <haxelib name="lime" />
+
 ```
 
 ---
 
-## Basic Usage
-
-The most minimal Quark application looks like this:
+## Getting Started
 
 ```haxe
-import lime.graphics.RenderContext;
 import lime.app.Application;
+import lime.graphics.RenderContext;
+
 import quark.app.App;
 
 class Main extends Application {
-    override function onWindowCreate() {
+    override function onWindowCreate():Void {
         super.onWindowCreate();
         App.run(new Game());
     }
 }
 
 class Game extends App {
-    override function onCreate() {
+
+    override function onCreate():Void {
         super.onCreate();
-        // initialize your resources here
     }
 
-    override function onUpdate(dt:Float) {
+    override function onUpdate(dt:Float):Void {
         super.onUpdate(dt);
-        // dt is delta time in seconds
     }
 
-    override function onRender(ctx:RenderContext) {
+    override function onRender(ctx:RenderContext):Void {
         super.onRender(ctx);
-        // issue your GL draw calls here
     }
 }
+
 ```
-
-`App` gives you a clean lifecycle on top of Lime's `Application`:
-
-| Method | When it's called |
-|---|---|
-| `onCreate()` | Once, after the GL context is ready |
-| `onUpdate(dt)` | Every frame, before rendering |
-| `onRender(ctx)` | Every frame, during the render pass |
-| `onClose()` | When the application is closing |
 
 ---
 
-## Math Utilities
-
-Quark includes a small math library so you're not reaching for external dependencies for the basics:
+## Creating a Shader
 
 ```haxe
-import quark.math.Vec2;
-import quark.math.Vec3;
-import quark.math.Mat4;
-import quark.math.MathUtils;
-
-var pos:Vec2   = new Vec2(100, 200);
-var dir:Vec2   = new Vec2(3, 4).normalized;
-var model:Mat4 = Mat4.identity();
-
-model = model * Mat4.translation(new Vec3(pos.x, pos.y, 0));
-model = model * Mat4.rotationZ(MathUtils.toRadians(45));
-model = model * Mat4.scale(new Vec3(2.0, 2.0, 1.0));
-```
-
-Included types:
-
-- `Vec2`, `Vec3`, `Vec4`
-- `Mat3`, `Mat4`, `Quat`
-- `Rect`, `Color`
-- `MathUtils` — lerp, clamp, remap, toRadians, toDegrees, etc.
-
----
-
-## Shader Helpers
-
-Writing and compiling shaders manually is verbose. Quark provides a thin wrapper:
-
-```haxe
-import quark.graphics.Shader;
-
-var shader:Shader = new Shader(
-    vertexSrc,    // your GLSL vertex source
-    fragmentSrc   // your GLSL fragment source
+var shader = new Shader(
+    vertexSource,
+    fragmentSource
 );
 
 shader.bind();
-shader.setFloat("uTime",       elapsed);
-shader.setVec2("uResolution",  new Vec2(1280, 720));
-shader.setMat4("uProjection",  projection);
+
+shader.setFloat("uTime", elapsed);
+shader.setMat4("uProjection", projection);
+
 shader.unbind();
+
 ```
 
 ---
 
-## Buffers
+## Creating Buffers
 
 ```haxe
-import quark.graphics.VertexBuffer;
-import quark.graphics.IndexBuffer;
-import quark.graphics.VertexLayout;
+var vertexBuffer = new VertexBuffer(
+    new Float32Array(vertices)
+);
 
-var vbo:VertexBuffer = new VertexBuffer(new Float32Array(vertices), VertexLayout.POS2); // x, y
-var ibo:IndexBuffer = new IndexBuffer(new UInt32Array(indices));
+var indexBuffer = new IndexBuffer(
+    new UInt32Array(indices)
+);
 
-vbo.bind();
-ibo.bind();
-// draw call here
-vbo.unbind();
 ```
 
 ---
 
-## What Quark is NOT
+## Creating a Vertex Array
 
-Quark deliberately omits things that belong in a higher layer:
+```haxe
+var vao = new VertexArray();
 
-- ❌ No scene management
-- ❌ No asset loading pipeline
-- ❌ No entity or component system
-- ❌ No audio management
-- ❌ No complex input management
+vao.addBuffer(
+    vertexBuffer,
+    VertexLayout.POS3_UV2
+);
+
+vao.setIndexBuffer(indexBuffer);
+
+```
 
 ---
 
-## Examples
+## Loading a Texture
 
-The `examples/` folder in the repository contains progressively more complex demos:
+```haxe
+var texture = new Texture(
+    Image.fromFile("assets/player.png")
+);
 
-| Example | What it shows |
-|---|---|
-| `01_clear` | Clear the screen with a the window color |
-| `02_triangle` | First triangle using a VBO and a basic shader |
-| `03_texture` | Sampling a texture in GLSL |
-| `04_transform` | Applying a model matrix for position, rotation, and scale |
-| `05_batch` | Simple quad batching for multiple sprites |
+texture.bind();
+
+```
+
+---
+
+## Render-To-Texture
+
+```haxe
+var colorTexture = Texture.empty(
+    1024,
+    1024
+);
+
+var depthBuffer = new Renderbuffer(
+    1024,
+    1024
+);
+
+var framebuffer = new Framebuffer();
+
+framebuffer.attachTexture(colorTexture);
+framebuffer.attachRenderbuffer(depthBuffer);
+
+```
+
+---
+
+## What Quark Is Not
+
+Quark intentionally does not include:
+
+* Scene management
+* Entity systems
+* Component systems
+* Asset pipelines
+* Animation systems
+* Physics engines
+* Audio systems
+* UI frameworks
+
+These belong in higher-level libraries built on top of Quark.
 
 ---
 
 ## Targets
 
-| Target | Status |
-|---|---|
-| Desktop (HL/C++) | ✅ Supported |
-| HTML5 / WebGL | ✅ Supported |
-| Android | ✅ Supported |
-| iOS | ✅ Supported |
+| Platform | Status |
+| --- | --- |
+| Windows | ✅ |
+| Linux | ✅ |
+| macOS | ✅ |
+| HTML5 / WebGL | ✅ |
+| Android | ✅ |
+| iOS | ✅ |
 | Consoles | 🔧 Planned |
+
+---
+
+## Examples
+
+The repository includes a collection of examples demonstrating:
+
+* Window creation
+* Basic rendering
+* Texturing
+* Transformations
+* Vertex layouts
+* Framebuffers
+* Sprite batching
+* 3D rendering
 
 ---
 
 ## License
 
-MIT — do whatever you want, just don't remove the attribution.
+MIT License.
+
+Use it in personal, commercial, open-source, or proprietary projects. Attribution is appreciated.

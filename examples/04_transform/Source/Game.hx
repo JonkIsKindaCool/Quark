@@ -1,36 +1,40 @@
 package;
 
-import quark.math.Vec3;
 import lime.app.Application;
-import quark.math.Mat4;
-import quark.graphics.Texture;
 import lime.graphics.Image;
-import lime.utils.UInt32Array;
-import quark.graphics.VertexLayout;
-import lime.utils.Float32Array;
-import quark.graphics.IndexBuffer;
-import quark.graphics.VertexBuffer;
-import quark.graphics.Shader;
-import quark.graphics.Color;
 import lime.graphics.RenderContext;
+import lime.graphics.opengl.GL;
+import lime.utils.Float32Array;
+import lime.utils.UInt32Array;
 import quark.app.App;
+import quark.math.Mat4;
+import quark.math.Vec3;
+import quark.utils.Color;
+import quark.graphics.Shader;
+import quark.graphics.Texture;
+import quark.graphics.buffer.IndexBuffer;
+import quark.graphics.buffer.VertexBuffer;
+import quark.graphics.vertex.VertexArray;
+import quark.graphics.vertex.VertexLayout;
 
 class Game extends App {
 	var shader:Shader;
-	var vertex:VertexBuffer;
-	var index:IndexBuffer;
+
+	var vao:VertexArray;
+	var vbo:VertexBuffer;
+	var ibo:IndexBuffer;
 
 	var projection:Mat4;
 	var model:Mat4;
 
 	var texture:Texture;
+
 	var w:Int;
 	var h:Int;
 
 	override function onCreate() {
-		super.onCreate();
-
 		projection = Mat4.ortho(0, Application.current.window.width, Application.current.window.height, 0, -100, 100);
+
 		model = Mat4.identity();
 
 		Image.loadFromFile("assets/test.png").onComplete(img -> {
@@ -38,7 +42,7 @@ class Game extends App {
 
 			uniform mat4 projection;
 			uniform mat4 model;
-			
+
 			in vec2 position;
 			in vec2 uv;
 
@@ -70,14 +74,24 @@ class Game extends App {
 			w = img.width;
 			h = img.height;
 
-			vertex = new VertexBuffer(new Float32Array([
+			vbo = new VertexBuffer(new Float32Array([
 				0, 0, 0, 0,
 				w, 0, 1, 0,
 				0, h, 0, 1,
-				w, h, 1, 1,
-			]), VertexLayout.POS2_UV2);
+				w, h, 1, 1
+			]));
 
-			index = new IndexBuffer(new UInt32Array([0, 1, 2, 1, 2, 3]));
+			ibo = new IndexBuffer(new UInt32Array([
+				0, 1, 2,
+				1, 2, 3
+			]));
+
+			vao = new VertexArray();
+
+			vao.addBuffer(vbo, VertexLayout.POS2_UV2);
+
+			vao.setIndexBuffer(ibo);
+
 			texture = new Texture(img);
 		});
 	}
@@ -85,8 +99,6 @@ class Game extends App {
 	var angle:Float = 0;
 
 	override function onUpdate(dt:Float) {
-		super.onUpdate(dt);
-
 		if (texture == null)
 			return;
 
@@ -105,42 +117,50 @@ class Game extends App {
 	}
 
 	override function onRender(ctx:RenderContext) {
-		super.onRender(ctx);
-
 		var color:Color = ctx.attributes.background;
 
-		App.GL.clearColor(color.rf, color.gf, color.bf, color.af);
-		App.GL.clear(App.GL.COLOR_BUFFER_BIT);
+		GL.clearColor(color.rf, color.gf, color.bf, color.af);
 
-		if (texture != null) {
-			texture.bind();
+		GL.clear(GL.COLOR_BUFFER_BIT);
 
-			shader.bind();
-			shader.setMat4("model", model);
-			shader.setMat4("projection", projection);
-			shader.setTexture("tex", 0);
-			vertex.bind();
-			index.bind();
+		if (texture == null)
+			return;
 
-			App.GL.drawElements(App.GL.TRIANGLES, index.count, App.GL.UNSIGNED_INT, 0);
-		}
+		texture.bind();
+
+		shader.bind();
+
+		shader.setMat4("model", model);
+
+		shader.setMat4("projection", projection);
+
+		shader.setTexture("tex", 0);
+
+		vao.bind();
+
+		GL.drawElements(GL.TRIANGLES, ibo.count, GL.UNSIGNED_INT, 0);
 	}
 
 	override function onResize(width:Int, height:Int) {
-		super.onResize(width, height);
-
 		projection = Mat4.ortho(0, width, height, 0, -1000, 1000);
 
-		App.GL.viewport(0, 0, width, height);
+		GL.viewport(0, 0, width, height);
 	}
 
 	override function onClose() {
-		super.onClose();
-		
-		texture.destroy();
+		if (texture != null)
+			texture.dispose();
 
-		vertex.dispose();
-		index.dispose();
-		shader.dispose();
+		if (vao != null)
+			vao.dispose();
+
+		if (vbo != null)
+			vbo.dispose();
+
+		if (ibo != null)
+			ibo.dispose();
+
+		if (shader != null)
+			shader.dispose();
 	}
 }

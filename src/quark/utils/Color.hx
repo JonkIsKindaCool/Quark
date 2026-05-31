@@ -1,4 +1,4 @@
-package quark.graphics;
+package quark.utils;
 
 /**
  * Represents a color stored as a 32-bit RGBA integer.
