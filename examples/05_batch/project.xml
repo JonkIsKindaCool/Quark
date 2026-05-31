@@ -8,7 +8,7 @@
 	<source path="Source" />
 	
 	<haxelib name="lime" />
-	<haxelib name="quark" />
+	<haxelib name="quarks" />
 	
 	<assets path="Assets" rename="assets" />
 	
