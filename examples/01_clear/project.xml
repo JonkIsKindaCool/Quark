@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="Clear Window" package="org.jonkiskindacool.quark.example01" version="1.0.0" company="JonkIsKindaCool" />
+	<window background="#FF00FF" fps="60"/>
+	<app main="Main" path="Export" file="Example01" />
+	
+	<source path="Source" />
+	
+	<haxelib name="lime" />
+	<haxelib name="quark" />
+	
+	<assets path="Assets" rename="assets" />
+	
+</project>

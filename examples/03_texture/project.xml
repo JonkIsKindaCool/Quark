@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="Basic Texture" package="org.jonkiskindacool.quark.example03" version="1.0.0" company="JonkIsKindaCool" />
+	<window background="#596e57" fps="60"/>
+	<app main="Main" path="Export" file="Example03" />
+	
+	<source path="Source" />
+	
+	<haxelib name="lime" />
+	<haxelib name="quark" />
+	
+	<assets path="Assets" rename="assets" />
+	
+</project>
