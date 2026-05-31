@@ -384,9 +384,7 @@ The repository includes a collection of examples demonstrating:
 * Texturing
 * Transformations
 * Vertex layouts
-* Framebuffers
 * Sprite batching
-* 3D rendering
 
 ---
 
