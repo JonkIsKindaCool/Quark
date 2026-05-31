@@ -1,17 +1,19 @@
 {
     "name": "quark",
-    "url": "https://github.com/JonkIsKindaCool/Quark/",
+    "url": "https://github.com/JonkIsKindaCool/Quark",
     "license": "MIT",
     "tags": [
-        "cross",
+        "opengl",
+        "webgl",
+        "graphics",
         "lime",
-        "game",
-        "opengl"
+        "rendering",
+        "cross"
     ],
-    "description": "A Simple OpenGL Wrapper for lime.",
+    "description": "A lightweight OpenGL and WebGL abstraction layer built on top of Lime.",
     "version": "1.0.0",
-    "classPath": "src/",
-    "releasenote": "Initial release.",
+    "classPath": "src",
+    "releasenote": "Initial release with basic OpenGL abstractions, buffers, shaders, textures, and application lifecycle callbacks.",
     "contributors": [
         "JonkIsKindaCool"
     ],
