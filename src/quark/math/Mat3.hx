@@ -262,6 +262,150 @@ abstract Mat3(BaseMat3) from BaseMat3 to BaseMat3 {
 		var d:Float32Array = this.data;
 		return 'Mat3(\n  ${d[0]} ${d[3]} ${d[6]}\n  ${d[1]} ${d[4]} ${d[7]}\n  ${d[2]} ${d[5]} ${d[8]}\n)';
 	}
+
+	// ── In-place mutating methods ────────────────────────────────────────────
+
+	/**
+	 * Sets all nine elements of this matrix from individual component values.
+	 * Parameters follow mathematical notation (row, col).
+	 * @return This matrix after modification.
+	 */
+	public inline function setComponents(m00:Float, m10:Float, m20:Float, m01:Float, m11:Float, m21:Float, m02:Float, m12:Float, m22:Float):Mat3 {
+		this.data[0] = m00; this.data[1] = m10; this.data[2] = m20;
+		this.data[3] = m01; this.data[4] = m11; this.data[5] = m21;
+		this.data[6] = m02; this.data[7] = m12; this.data[8] = m22;
+		return cast this;
+	}
+
+	/**
+	 * Copies all elements from matrix `b` into this matrix in place.
+	 * @param b The source matrix.
+	 * @return This matrix after modification.
+	 */
+	public inline function copyFromEq(b:Mat3):Mat3 {
+		var d:Float32Array = b.data;
+		for (i in 0...9) this.data[i] = d[i];
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to the identity matrix in place.
+	 * @return This matrix after modification.
+	 */
+	public inline function setIdentityEq():Mat3 {
+		this.data[0] = 1; this.data[1] = 0; this.data[2] = 0;
+		this.data[3] = 0; this.data[4] = 1; this.data[5] = 0;
+		this.data[6] = 0; this.data[7] = 0; this.data[8] = 1;
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to the zero matrix in place.
+	 * @return This matrix after modification.
+	 */
+	public inline function setZeroEq():Mat3 {
+		for (i in 0...9) this.data[i] = 0;
+		return cast this;
+	}
+
+	/**
+	 * Multiplies this matrix by `b` in place (this = this * b).
+	 * @param b The right-hand matrix operand.
+	 * @return This matrix after modification.
+	 */
+	public inline function multiplyEq(b:Mat3):Mat3 {
+		var a:Float32Array = this.data;
+		var d:Float32Array = b.data;
+		var r0:Float = a[0] * d[0] + a[3] * d[1] + a[6] * d[2];
+		var r1:Float = a[1] * d[0] + a[4] * d[1] + a[7] * d[2];
+		var r2:Float = a[2] * d[0] + a[5] * d[1] + a[8] * d[2];
+		var r3:Float = a[0] * d[3] + a[3] * d[4] + a[6] * d[5];
+		var r4:Float = a[1] * d[3] + a[4] * d[4] + a[7] * d[5];
+		var r5:Float = a[2] * d[3] + a[5] * d[4] + a[8] * d[5];
+		var r6:Float = a[0] * d[6] + a[3] * d[7] + a[6] * d[8];
+		var r7:Float = a[1] * d[6] + a[4] * d[7] + a[7] * d[8];
+		var r8:Float = a[2] * d[6] + a[5] * d[7] + a[8] * d[8];
+		a[0] = r0; a[1] = r1; a[2] = r2;
+		a[3] = r3; a[4] = r4; a[5] = r5;
+		a[6] = r6; a[7] = r7; a[8] = r8;
+		return cast this;
+	}
+
+	/**
+	 * Scales every element of this matrix by `s` in place.
+	 * @param s The scalar factor.
+	 * @return This matrix after modification.
+	 */
+	public inline function multiplyScalarEq(s:Float):Mat3 {
+		for (i in 0...9) this.data[i] *= s;
+		return cast this;
+	}
+
+	/**
+	 * Adds matrix `b` element-wise to this matrix in place.
+	 * @param b The matrix to add.
+	 * @return This matrix after modification.
+	 */
+	public inline function addEq(b:Mat3):Mat3 {
+		var d:Float32Array = b.data;
+		for (i in 0...9) this.data[i] += d[i];
+		return cast this;
+	}
+
+	/**
+	 * Subtracts matrix `b` element-wise from this matrix in place.
+	 * @param b The matrix to subtract.
+	 * @return This matrix after modification.
+	 */
+	public inline function subtractEq(b:Mat3):Mat3 {
+		var d:Float32Array = b.data;
+		for (i in 0...9) this.data[i] -= d[i];
+		return cast this;
+	}
+
+	/**
+	 * Transposes this matrix in place (swaps rows and columns).
+	 * @return This matrix after modification.
+	 */
+	public inline function transposeEq():Mat3 {
+		var d:Float32Array = this.data;
+		var t:Float;
+		t = d[1]; d[1] = d[3]; d[3] = t;
+		t = d[2]; d[2] = d[6]; d[6] = t;
+		t = d[5]; d[5] = d[7]; d[7] = t;
+		return cast this;
+	}
+
+	/**
+	 * Inverts this matrix in place.
+	 * Falls back to identity if the determinant is near zero.
+	 * @return This matrix after modification.
+	 */
+	public inline function inverseEq():Mat3 {
+		var result:Mat3 = inverse();
+		copyFromEq(result);
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix from a quaternion in place.
+	 * @param q The source quaternion.
+	 * @return This matrix after modification.
+	 */
+	public inline function setFromQuatEq(q:Quat):Mat3 {
+		copyFromEq(Mat3.fromQuat(q));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix from the upper-left 3x3 block of a 4x4 matrix in place.
+	 * @param m The source Mat4 matrix.
+	 * @return This matrix after modification.
+	 */
+	public inline function setFromMat4Eq(m:Mat4):Mat3 {
+		copyFromEq(Mat3.fromMat4(m));
+		return cast this;
+	}
 }
 
 @:structInit

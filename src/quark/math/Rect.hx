@@ -123,6 +123,102 @@ abstract Rect(BaseRect) from BaseRect to BaseRect {
 	/** Returns the Bottom-Right vertex position. */
 	public inline function bottomRight():Vec2
 		return new Vec2(maxX, maxY);
+
+	// ── In-place mutating methods ────────────────────────────────────────────
+
+	/**
+	 * Sets all four fields of this rectangle in place.
+	 * @param x The new X position (left edge).
+	 * @param y The new Y position (top edge).
+	 * @param width The new width.
+	 * @param height The new height.
+	 * @return This rectangle after modification.
+	 */
+	public inline function setEq(x:Float, y:Float, width:Float, height:Float):Rect {
+		this.x = x;
+		this.y = y;
+		this.w = width;
+		this.h = height;
+		return cast this;
+	}
+
+	/**
+	 * Sets this rectangle from min/max coordinates in place.
+	 * @param minX The left edge X coordinate.
+	 * @param minY The top edge Y coordinate.
+	 * @param maxX The right edge X coordinate.
+	 * @param maxY The bottom edge Y coordinate.
+	 * @return This rectangle after modification.
+	 */
+	public inline function setFromMinMaxEq(minX:Float, minY:Float, maxX:Float, maxY:Float):Rect {
+		this.x = minX;
+		this.y = minY;
+		this.w = maxX - minX;
+		this.h = maxY - minY;
+		return cast this;
+	}
+
+	/**
+	 * Translates this rectangle by `(dx, dy)` in place.
+	 * @param dx Horizontal offset.
+	 * @param dy Vertical offset.
+	 * @return This rectangle after modification.
+	 */
+	public inline function translateEq(dx:Float, dy:Float):Rect {
+		this.x += dx;
+		this.y += dy;
+		return cast this;
+	}
+
+	/**
+	 * Expands this rectangle uniformly in all directions by `amount` in place.
+	 * Pass a negative value to shrink.
+	 * @param amount The expansion amount.
+	 * @return This rectangle after modification.
+	 */
+	public inline function expandEq(amount:Float):Rect {
+		this.x -= amount;
+		this.y -= amount;
+		this.w += amount * 2;
+		this.h += amount * 2;
+		return cast this;
+	}
+
+	/**
+	 * Replaces this rectangle with the union of itself and `other` in place
+	 * (smallest rectangle enclosing both).
+	 * @param other The rectangle to merge with.
+	 * @return This rectangle after modification.
+	 */
+	public inline function mergeEq(other:Rect):Rect {
+		var nx:Float = Math.min(this.x, other.x);
+		var ny:Float = Math.min(this.y, other.y);
+		var nMaxX:Float = Math.max(this.x + this.w, other.x + other.w);
+		var nMaxY:Float = Math.max(this.y + this.h, other.y + other.h);
+		this.x = nx;
+		this.y = ny;
+		this.w = nMaxX - nx;
+		this.h = nMaxY - ny;
+		return cast this;
+	}
+
+	/**
+	 * Replaces this rectangle with the intersection of itself and `other` in place.
+	 * The result may have negative dimensions if the rectangles do not overlap.
+	 * @param other The rectangle to intersect with.
+	 * @return This rectangle after modification.
+	 */
+	public inline function intersectionEq(other:Rect):Rect {
+		var nx:Float = Math.max(this.x, other.x);
+		var ny:Float = Math.max(this.y, other.y);
+		var nMaxX:Float = Math.min(this.x + this.w, other.x + other.w);
+		var nMaxY:Float = Math.min(this.y + this.h, other.y + other.h);
+		this.x = nx;
+		this.y = ny;
+		this.w = nMaxX - nx;
+		this.h = nMaxY - ny;
+		return cast this;
+	}
 }
 
 @:structInit

@@ -373,6 +373,184 @@ abstract Quat(BaseQuat) from BaseQuat to BaseQuat {
 	/** Returns a string representation of this quaternion. */
 	public inline function toString():String
 		return 'Quat(${this.x}, ${this.y}, ${this.z}, ${this.w})';
+
+	// ── In-place mutating methods ────────────────────────────────────────────
+
+	/**
+	 * Sets all four components of this quaternion.
+	 * @param x The X (imaginary i) component.
+	 * @param y The Y (imaginary j) component.
+	 * @param z The Z (imaginary k) component.
+	 * @param w The W (real scalar) component.
+	 * @return This quaternion after modification.
+	 */
+	public inline function setXYZW(x:Float, y:Float, z:Float, w:Float):Quat {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
+		return cast this;
+	}
+
+	/**
+	 * Sets this quaternion from an axis and rotation angle in place.
+	 * @param axis The rotation axis (should be normalized).
+	 * @param angle The rotation angle in radians.
+	 * @return This quaternion after modification.
+	 */
+	public inline function setFromAxisAngle(axis:Vec3, angle:Float):Quat {
+		var half:Float = angle * 0.5;
+		var s:Float = Math.sin(half);
+		this.x = axis.x * s;
+		this.y = axis.y * s;
+		this.z = axis.z * s;
+		this.w = Math.cos(half);
+		return cast this;
+	}
+
+	/**
+	 * Sets this quaternion from Euler angles in place.
+	 * @param x Pitch (rotation around X-axis) in radians.
+	 * @param y Yaw (rotation around Y-axis) in radians.
+	 * @param z Roll (rotation around Z-axis) in radians.
+	 * @return This quaternion after modification.
+	 */
+	public inline function setFromEuler(x:Float, y:Float, z:Float):Quat {
+		var cx:Float = Math.cos(x * 0.5), sx:Float = Math.sin(x * 0.5);
+		var cy:Float = Math.cos(y * 0.5), sy:Float = Math.sin(y * 0.5);
+		var cz:Float = Math.cos(z * 0.5), sz:Float = Math.sin(z * 0.5);
+		this.x = sx * cy * cz + cx * sy * sz;
+		this.y = cx * sy * cz - sx * cy * sz;
+		this.z = cx * cy * sz + sx * sy * cz;
+		this.w = cx * cy * cz - sx * sy * sz;
+		return cast this;
+	}
+
+	/**
+	 * Sets this quaternion from a 4x4 matrix in place.
+	 * @param m The source Mat4 matrix.
+	 * @return This quaternion after modification.
+	 */
+	public inline function setFromMat4(m:Mat4):Quat {
+		setFromMat3(Mat3.fromMat4(m));
+		return cast this;
+	}
+
+	/**
+	 * Multiplies this quaternion by `b` in place (appends rotation).
+	 * @param b The right-hand quaternion operand.
+	 * @return This quaternion after modification.
+	 */
+	public inline function multiplyEq(b:Quat):Quat {
+		var nx:Float = this.w * b.x + this.x * b.w + this.y * b.z - this.z * b.y;
+		var ny:Float = this.w * b.y - this.x * b.z + this.y * b.w + this.z * b.x;
+		var nz:Float = this.w * b.z + this.x * b.y - this.y * b.x + this.z * b.w;
+		this.w = this.w * b.w - this.x * b.x - this.y * b.y - this.z * b.z;
+		this.x = nx;
+		this.y = ny;
+		this.z = nz;
+		return cast this;
+	}
+
+	/**
+	 * Multiplies all components by a scalar in place.
+	 * @param s The scalar factor.
+	 * @return This quaternion after modification.
+	 */
+	public inline function multiplyScalarEq(s:Float):Quat {
+		this.x *= s;
+		this.y *= s;
+		this.z *= s;
+		this.w *= s;
+		return cast this;
+	}
+
+	/**
+	 * Adds `b` to this quaternion component-wise in place.
+	 * @param b The quaternion to add.
+	 * @return This quaternion after modification.
+	 */
+	public inline function addEq(b:Quat):Quat {
+		this.x += b.x;
+		this.y += b.y;
+		this.z += b.z;
+		this.w += b.w;
+		return cast this;
+	}
+
+	/**
+	 * Negates all components of this quaternion in place.
+	 * @return This quaternion after modification.
+	 */
+	public inline function negateEq():Quat {
+		this.x = -this.x;
+		this.y = -this.y;
+		this.z = -this.z;
+		this.w = -this.w;
+		return cast this;
+	}
+
+	/**
+	 * Normalizes this quaternion to unit length in place.
+	 * Falls back to identity if the magnitude is near zero.
+	 * @return This quaternion after modification.
+	 */
+	public inline function normalizeEq():Quat {
+		var len:Float = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w);
+		if (len < 1e-10) {
+			this.x = 0; this.y = 0; this.z = 0; this.w = 1;
+		} else {
+			this.x /= len;
+			this.y /= len;
+			this.z /= len;
+			this.w /= len;
+		}
+		return cast this;
+	}
+
+	/**
+	 * Replaces this quaternion with its conjugate in place (negates the imaginary parts).
+	 * @return This quaternion after modification.
+	 */
+	public inline function conjugateEq():Quat {
+		this.x = -this.x;
+		this.y = -this.y;
+		this.z = -this.z;
+		return cast this;
+	}
+
+	/**
+	 * Replaces this quaternion with its inverse in place.
+	 * Falls back to identity if the magnitude is near zero.
+	 * @return This quaternion after modification.
+	 */
+	public inline function inverseEq():Quat {
+		var lenSq:Float = this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
+		if (lenSq < 1e-10) {
+			this.x = 0; this.y = 0; this.z = 0; this.w = 1;
+		} else {
+			var inv:Float = 1.0 / lenSq;
+			this.x = -this.x * inv;
+			this.y = -this.y * inv;
+			this.z = -this.z * inv;
+			this.w = this.w * inv;
+		}
+		return cast this;
+	}
+
+	/**
+	 * Linearly interpolates this quaternion toward `to` by factor `t` in place, then normalizes.
+	 * @param to The target quaternion.
+	 * @param t The interpolation factor (0–1).
+	 * @return This quaternion after modification.
+	 */
+	public inline function lerpEq(to:Quat, t:Float):Quat {
+		this.x += (to.x - this.x) * t;
+		this.y += (to.y - this.y) * t;
+		this.z += (to.z - this.z) * t;
+		this.w += (to.w - this.w) * t;
+		return normalizeEq();
+	}
 }
 
 @:structInit

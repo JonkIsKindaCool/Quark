@@ -265,6 +265,261 @@ abstract Vec2(BaseVec2) from BaseVec2 to BaseVec2 {
 	public inline function toString():String {
 		return 'Vec2(${this.x}, ${this.y})';
 	}
+
+	// ── In-place mutating methods ────────────────────────────────────────────
+
+	/**
+	 * Sets both components of this vector.
+	 * @param x The new X component.
+	 * @param y The new Y component.
+	 * @return This vector after modification.
+	 */
+	public inline function setXY(x:Float, y:Float):Vec2 {
+		this.x = x;
+		this.y = y;
+		return cast this;
+	}
+
+	/**
+	 * Adds `other` to this vector in place.
+	 * @param other The vector to add.
+	 * @return This vector after modification.
+	 */
+	public inline function addEq(other:Vec2):Vec2 {
+		this.x += other.x;
+		this.y += other.y;
+		return cast this;
+	}
+
+	/**
+	 * Subtracts `other` from this vector in place.
+	 * @param other The vector to subtract.
+	 * @return This vector after modification.
+	 */
+	public inline function subEq(other:Vec2):Vec2 {
+		this.x -= other.x;
+		this.y -= other.y;
+		return cast this;
+	}
+
+	/**
+	 * Multiplies this vector by a scalar in place.
+	 * @param k The scalar factor.
+	 * @return This vector after modification.
+	 */
+	public inline function mulScalarEq(k:Float):Vec2 {
+		this.x *= k;
+		this.y *= k;
+		return cast this;
+	}
+
+	/**
+	 * Divides this vector by a scalar in place.
+	 * @param k The scalar divisor.
+	 * @return This vector after modification.
+	 */
+	public inline function divScalarEq(k:Float):Vec2 {
+		this.x /= k;
+		this.y /= k;
+		return cast this;
+	}
+
+	/**
+	 * Negates both components of this vector in place.
+	 * @return This vector after modification.
+	 */
+	public inline function negEq():Vec2 {
+		this.x = -this.x;
+		this.y = -this.y;
+		return cast this;
+	}
+
+	/**
+	 * Normalizes this vector to unit length in place.
+	 * If the length is zero the vector remains unchanged.
+	 * @return This vector after modification.
+	 */
+	public inline function normalizeEq():Vec2 {
+		var len:Float = Math.sqrt(this.x * this.x + this.y * this.y);
+		if (len != 0) {
+			this.x /= len;
+			this.y /= len;
+		}
+		return cast this;
+	}
+
+	/**
+	 * Rotates this vector by `angle` radians in place.
+	 * @param angle The rotation angle in radians.
+	 * @return This vector after modification.
+	 */
+	public inline function rotateEq(angle:Float):Vec2 {
+		var cos:Float = Math.cos(angle);
+		var sin:Float = Math.sin(angle);
+		var nx:Float = this.x * cos - this.y * sin;
+		this.y = this.x * sin + this.y * cos;
+		this.x = nx;
+		return cast this;
+	}
+
+	/**
+	 * Linearly interpolates this vector toward `to` by factor `t` in place.
+	 * @param to The target vector.
+	 * @param t The interpolation factor (0–1).
+	 * @return This vector after modification.
+	 */
+	public inline function lerpEq(to:Vec2, t:Float):Vec2 {
+		this.x += (to.x - this.x) * t;
+		this.y += (to.y - this.y) * t;
+		return cast this;
+	}
+
+	/**
+	 * Clamps each component between the corresponding components of `min` and `max` in place.
+	 * @param min The minimum bound vector.
+	 * @param max The maximum bound vector.
+	 * @return This vector after modification.
+	 */
+	public inline function clampEq(min:Vec2, max:Vec2):Vec2 {
+		this.x = Math.min(max.x, Math.max(min.x, this.x));
+		this.y = Math.min(max.y, Math.max(min.y, this.y));
+		return cast this;
+	}
+
+	/**
+	 * Limits the length of this vector to `maxLen` in place.
+	 * @param maxLen The maximum allowed length.
+	 * @return This vector after modification.
+	 */
+	public inline function clampMagnitudeEq(maxLen:Float):Vec2 {
+		var len:Float = Math.sqrt(this.x * this.x + this.y * this.y);
+		if (len > maxLen) {
+			var s:Float = maxLen / len;
+			this.x *= s;
+			this.y *= s;
+		}
+		return cast this;
+	}
+
+	/**
+	 * Applies Math.abs to each component in place.
+	 * @return This vector after modification.
+	 */
+	public inline function absEq():Vec2 {
+		this.x = Math.abs(this.x);
+		this.y = Math.abs(this.y);
+		return cast this;
+	}
+
+	/**
+	 * Floors each component in place.
+	 * @return This vector after modification.
+	 */
+	public inline function floorEq():Vec2 {
+		this.x = Math.floor(this.x);
+		this.y = Math.floor(this.y);
+		return cast this;
+	}
+
+	/**
+	 * Ceils each component in place.
+	 * @return This vector after modification.
+	 */
+	public inline function ceilEq():Vec2 {
+		this.x = Math.ceil(this.x);
+		this.y = Math.ceil(this.y);
+		return cast this;
+	}
+
+	/**
+	 * Rounds each component to the nearest integer in place.
+	 * @return This vector after modification.
+	 */
+	public inline function roundEq():Vec2 {
+		this.x = Math.round(this.x);
+		this.y = Math.round(this.y);
+		return cast this;
+	}
+
+	/**
+	 * Keeps only the minimum component values between this and `other` in place.
+	 * @param other The vector to compare against.
+	 * @return This vector after modification.
+	 */
+	public inline function minComponentEq(other:Vec2):Vec2 {
+		this.x = Math.min(this.x, other.x);
+		this.y = Math.min(this.y, other.y);
+		return cast this;
+	}
+
+	/**
+	 * Keeps only the maximum component values between this and `other` in place.
+	 * @param other The vector to compare against.
+	 * @return This vector after modification.
+	 */
+	public inline function maxComponentEq(other:Vec2):Vec2 {
+		this.x = Math.max(this.x, other.x);
+		this.y = Math.max(this.y, other.y);
+		return cast this;
+	}
+
+	/**
+	 * Snaps each component to a grid of size `gridSize` in place.
+	 * @param gridSize The grid cell size.
+	 * @return This vector after modification.
+	 */
+	public inline function snapToGridEq(gridSize:Float):Vec2 {
+		this.x = Math.round(this.x / gridSize) * gridSize;
+		this.y = Math.round(this.y / gridSize) * gridSize;
+		return cast this;
+	}
+
+	/**
+	 * Moves this vector toward `target` by at most `maxDelta` in place.
+	 * @param target The destination vector.
+	 * @param maxDelta The maximum movement distance.
+	 * @return This vector after modification.
+	 */
+	public inline function moveTowardEq(target:Vec2, maxDelta:Float):Vec2 {
+		var dx:Float = target.x - this.x;
+		var dy:Float = target.y - this.y;
+		var len:Float = Math.sqrt(dx * dx + dy * dy);
+		if (len <= maxDelta) {
+			this.x = target.x;
+			this.y = target.y;
+		} else {
+			var s:Float = maxDelta / len;
+			this.x += dx * s;
+			this.y += dy * s;
+		}
+		return cast this;
+	}
+
+	/**
+	 * Transforms this vector as a point using a 3x3 matrix in place (includes translation).
+	 * @param m The transformation matrix.
+	 * @return This vector after modification.
+	 */
+	public inline function transformMat3Eq(m:Mat3):Vec2 {
+		var d = m.data;
+		var nx:Float = d[0] * this.x + d[3] * this.y + d[6];
+		this.y = d[1] * this.x + d[4] * this.y + d[7];
+		this.x = nx;
+		return cast this;
+	}
+
+	/**
+	 * Transforms this vector as a direction using a 3x3 matrix in place (ignores translation).
+	 * @param m The transformation matrix.
+	 * @return This vector after modification.
+	 */
+	public inline function transformMat3DirectionEq(m:Mat3):Vec2 {
+		var d = m.data;
+		var nx:Float = d[0] * this.x + d[3] * this.y;
+		this.y = d[1] * this.x + d[4] * this.y;
+		this.x = nx;
+		return cast this;
+	}
 }
 
 @:structInit

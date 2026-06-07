@@ -11,8 +11,7 @@ import lime.graphics.opengl.GLBuffer;
  * Index buffers store vertex indices used by draw calls such as
  * `glDrawElements`, allowing vertices to be reused efficiently.
  */
-class IndexBuffer implements IDisposable{
-
+class IndexBuffer implements IDisposable {
 	/**
 	 * Native OpenGL buffer handle.
 	 */
@@ -33,16 +32,16 @@ class IndexBuffer implements IDisposable{
 	 *        - 4 for UInt32 indices
 	 * @param dyn Whether the buffer will be updated frequently.
 	 */
-	public function new(indices:ArrayBufferView, indexByteSize:Int = 4, dyn:Bool = false) {
+	public function new(indices:ArrayBufferView, indexByteSize:Int = 4, usage:BufferUsage = DYNAMIC_DRAW) {
 		ebo = GL.createBuffer();
 
 		bind();
 
-		GL.bufferData(
-			GL.ELEMENT_ARRAY_BUFFER,
-			indices,
-			dyn ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW
-		);
+		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices, switch (usage) {
+			case STATIC_DRAW: GL.STATIC_DRAW;
+			case DYNAMIC_DRAW: GL.DYNAMIC_DRAW;
+			case STREAM_DRAW: GL.STREAM_DRAW;
+		});
 
 		count = Std.int(indices.byteLength / indexByteSize);
 	}
@@ -59,11 +58,7 @@ class IndexBuffer implements IDisposable{
 	public function setData(indices:ArrayBufferView, indexByteSize:Int = 4, dyn:Bool = true):Void {
 		bind();
 
-		GL.bufferData(
-			GL.ELEMENT_ARRAY_BUFFER,
-			indices,
-			dyn ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW
-		);
+		GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, indices, dyn ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
 
 		count = Std.int(indices.byteLength / indexByteSize);
 	}

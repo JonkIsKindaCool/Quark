@@ -353,6 +353,244 @@ abstract Mat4(BaseMat4) from BaseMat4 to BaseMat4 {
 		var d:Float32Array = this.data;
 		return 'Mat4(\n' + '  ${d[0]} ${d[4]} ${d[8]}  ${d[12]}\n' + '  ${d[1]} ${d[5]} ${d[9]}  ${d[13]}\n' + '  ${d[2]} ${d[6]} ${d[10]} ${d[14]}\n' + '  ${d[3]} ${d[7]} ${d[11]} ${d[15]}\n)';
 	}
+
+	// ── In-place mutating methods ────────────────────────────────────────────
+
+	/**
+	 * Sets all sixteen elements of this matrix from individual component values.
+	 * @return This matrix after modification.
+	 */
+	public inline function setComponents(m00:Float, m10:Float, m20:Float, m30:Float, m01:Float, m11:Float, m21:Float, m31:Float, m02:Float, m12:Float,
+			m22:Float, m32:Float, m03:Float, m13:Float, m23:Float, m33:Float):Mat4 {
+		this.data[0] = m00;  this.data[1] = m10;  this.data[2] = m20;  this.data[3] = m30;
+		this.data[4] = m01;  this.data[5] = m11;  this.data[6] = m21;  this.data[7] = m31;
+		this.data[8] = m02;  this.data[9] = m12;  this.data[10] = m22; this.data[11] = m32;
+		this.data[12] = m03; this.data[13] = m13; this.data[14] = m23; this.data[15] = m33;
+		return cast this;
+	}
+
+	/**
+	 * Copies all elements from matrix `b` into this matrix in place.
+	 * @param b The source matrix.
+	 * @return This matrix after modification.
+	 */
+	public inline function copyFromEq(b:Mat4):Mat4 {
+		var d:Float32Array = b.data;
+		for (i in 0...16) this.data[i] = d[i];
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to the identity matrix in place.
+	 * @return This matrix after modification.
+	 */
+	public inline function setIdentityEq():Mat4 {
+		var d:Float32Array = this.data;
+		d[0] = 1; d[1] = 0; d[2] = 0;  d[3] = 0;
+		d[4] = 0; d[5] = 1; d[6] = 0;  d[7] = 0;
+		d[8] = 0; d[9] = 0; d[10] = 1; d[11] = 0;
+		d[12] = 0; d[13] = 0; d[14] = 0; d[15] = 1;
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to the zero matrix in place.
+	 * @return This matrix after modification.
+	 */
+	public inline function setZeroEq():Mat4 {
+		for (i in 0...16) this.data[i] = 0;
+		return cast this;
+	}
+
+	/**
+	 * Multiplies this matrix by `b` in place (this = this * b).
+	 * @param b The right-hand matrix operand.
+	 * @return This matrix after modification.
+	 */
+	public inline function multiplyEq(b:Mat4):Mat4 {
+		copyFromEq((cast this : Mat4) * b);
+		return cast this;
+	}
+
+	/**
+	 * Scales every element of this matrix by `s` in place.
+	 * @param s The scalar factor.
+	 * @return This matrix after modification.
+	 */
+	public inline function multiplyScalarEq(s:Float):Mat4 {
+		for (i in 0...16) this.data[i] *= s;
+		return cast this;
+	}
+
+	/**
+	 * Adds matrix `b` element-wise to this matrix in place.
+	 * @param b The matrix to add.
+	 * @return This matrix after modification.
+	 */
+	public inline function addEq(b:Mat4):Mat4 {
+		var d:Float32Array = b.data;
+		for (i in 0...16) this.data[i] += d[i];
+		return cast this;
+	}
+
+	/**
+	 * Subtracts matrix `b` element-wise from this matrix in place.
+	 * @param b The matrix to subtract.
+	 * @return This matrix after modification.
+	 */
+	public inline function subtractEq(b:Mat4):Mat4 {
+		var d:Float32Array = b.data;
+		for (i in 0...16) this.data[i] -= d[i];
+		return cast this;
+	}
+
+	/**
+	 * Transposes this matrix in place (swaps rows and columns).
+	 * @return This matrix after modification.
+	 */
+	public inline function transposeEq():Mat4 {
+		var d:Float32Array = this.data;
+		var t:Float;
+		t = d[1];  d[1]  = d[4];  d[4]  = t;
+		t = d[2];  d[2]  = d[8];  d[8]  = t;
+		t = d[3];  d[3]  = d[12]; d[12] = t;
+		t = d[6];  d[6]  = d[9];  d[9]  = t;
+		t = d[7];  d[7]  = d[13]; d[13] = t;
+		t = d[11]; d[11] = d[14]; d[14] = t;
+		return cast this;
+	}
+
+	/**
+	 * Inverts this matrix in place using the full 4x4 algebraic inverse.
+	 * Falls back to identity if the determinant is near zero.
+	 * @return This matrix after modification.
+	 */
+	public inline function inverseEq():Mat4 {
+		copyFromEq(inverse());
+		return cast this;
+	}
+
+	/**
+	 * Inverts this matrix in place using the fast affine-inverse path.
+	 * Only correct for matrices without shear or non-uniform scale.
+	 * @return This matrix after modification.
+	 */
+	public inline function affineInverseEq():Mat4 {
+		copyFromEq(affineInverse());
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix from a quaternion in place.
+	 * @param q The source quaternion.
+	 * @return This matrix after modification.
+	 */
+	public inline function setFromQuatEq(q:Quat):Mat4 {
+		copyFromEq(Mat4.fromQuat(q));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to a translation matrix in place.
+	 * @param v The translation vector.
+	 * @return This matrix after modification.
+	 */
+	public inline function setTranslationEq(v:Vec3):Mat4 {
+		copyFromEq(Mat4.translation(v));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to a scaling matrix in place.
+	 * @param v The scale vector.
+	 * @return This matrix after modification.
+	 */
+	public inline function setScaleEq(v:Vec3):Mat4 {
+		copyFromEq(Mat4.scale(v));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to an X-axis rotation matrix in place.
+	 * @param angle The rotation angle in radians.
+	 * @return This matrix after modification.
+	 */
+	public inline function setRotationXEq(angle:Float):Mat4 {
+		copyFromEq(Mat4.rotationX(angle));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to a Y-axis rotation matrix in place.
+	 * @param angle The rotation angle in radians.
+	 * @return This matrix after modification.
+	 */
+	public inline function setRotationYEq(angle:Float):Mat4 {
+		copyFromEq(Mat4.rotationY(angle));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to a Z-axis rotation matrix in place.
+	 * @param angle The rotation angle in radians.
+	 * @return This matrix after modification.
+	 */
+	public inline function setRotationZEq(angle:Float):Mat4 {
+		copyFromEq(Mat4.rotationZ(angle));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to a TRS (Translation, Rotation, Scale) matrix in place.
+	 * @param t The translation vector.
+	 * @param r The rotation quaternion.
+	 * @param s The scale vector.
+	 * @return This matrix after modification.
+	 */
+	public inline function setTrsEq(t:Vec3, r:Quat, s:Vec3):Mat4 {
+		copyFromEq(Mat4.trs(t, r, s));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to a perspective projection matrix in place.
+	 * @param fovY Vertical field-of-view in radians.
+	 * @param aspect Aspect ratio (width / height).
+	 * @param near Near clip plane distance.
+	 * @param far Far clip plane distance.
+	 * @return This matrix after modification.
+	 */
+	public inline function setPerspectiveEq(fovY:Float, aspect:Float, near:Float, far:Float):Mat4 {
+		copyFromEq(Mat4.perspective(fovY, aspect, near, far));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to an orthographic projection matrix in place.
+	 * @param left Left clip plane.
+	 * @param right Right clip plane.
+	 * @param bottom Bottom clip plane.
+	 * @param top Top clip plane.
+	 * @param near Near clip plane (default: -1).
+	 * @param far Far clip plane (default: 1).
+	 * @return This matrix after modification.
+	 */
+	public inline function setOrthoEq(left:Float, right:Float, bottom:Float, top:Float, near:Float = -1, far:Float = 1):Mat4 {
+		copyFromEq(Mat4.ortho(left, right, bottom, top, near, far));
+		return cast this;
+	}
+
+	/**
+	 * Sets this matrix to a lookAt view matrix in place.
+	 * @param eye The camera position.
+	 * @param target The point to look at.
+	 * @param up The up direction vector.
+	 * @return This matrix after modification.
+	 */
+	public inline function setLookAtEq(eye:Vec3, target:Vec3, up:Vec3):Mat4 {
+		copyFromEq(Mat4.lookAt(eye, target, up));
+		return cast this;
+	}
 }
 
 @:structInit
