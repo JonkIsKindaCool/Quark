@@ -105,8 +105,6 @@ abstract AABB(BaseAABB) from BaseAABB to BaseAABB {
 	public inline function toString():String
 		return 'AABB(min=${this.min}, max=${this.max})';
 
-	// ── In-place mutating methods ────────────────────────────────────────────
-
 	/**
 	 * Sets the minimum and maximum bounds of this AABB from explicit component values in place.
 	 * @param minX New minimum X bound.

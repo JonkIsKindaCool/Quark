@@ -354,8 +354,6 @@ abstract Mat4(BaseMat4) from BaseMat4 to BaseMat4 {
 		return 'Mat4(\n' + '  ${d[0]} ${d[4]} ${d[8]}  ${d[12]}\n' + '  ${d[1]} ${d[5]} ${d[9]}  ${d[13]}\n' + '  ${d[2]} ${d[6]} ${d[10]} ${d[14]}\n' + '  ${d[3]} ${d[7]} ${d[11]} ${d[15]}\n)';
 	}
 
-	// ── In-place mutating methods ────────────────────────────────────────────
-
 	/**
 	 * Sets all sixteen elements of this matrix from individual component values.
 	 * @return This matrix after modification.

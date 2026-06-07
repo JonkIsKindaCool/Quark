@@ -106,8 +106,6 @@ abstract Vec4(BaseVec4) from BaseVec4 to BaseVec4 {
 	public inline function toString():String
 		return 'Vec4(${this.x}, ${this.y}, ${this.z}, ${this.w})';
 
-	// ── In-place mutating methods ────────────────────────────────────────────
-
 	/**
 	 * Sets all four components of this vector.
 	 * @param x The new X component.

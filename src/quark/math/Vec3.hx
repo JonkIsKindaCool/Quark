@@ -222,8 +222,6 @@ abstract Vec3(BaseVec3) from BaseVec3 to BaseVec3 {
 	public inline function toVec2():Vec2
 		return new Vec2(this.x, this.y);
 
-	// ── In-place mutating methods ────────────────────────────────────────────
-
 	/**
 	 * Sets all three components of this vector.
 	 * @param x The new X component.

@@ -124,8 +124,6 @@ abstract Rect(BaseRect) from BaseRect to BaseRect {
 	public inline function bottomRight():Vec2
 		return new Vec2(maxX, maxY);
 
-	// ── In-place mutating methods ────────────────────────────────────────────
-
 	/**
 	 * Sets all four fields of this rectangle in place.
 	 * @param x The new X position (left edge).

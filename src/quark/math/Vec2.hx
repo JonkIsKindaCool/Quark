@@ -266,8 +266,6 @@ abstract Vec2(BaseVec2) from BaseVec2 to BaseVec2 {
 		return 'Vec2(${this.x}, ${this.y})';
 	}
 
-	// ── In-place mutating methods ────────────────────────────────────────────
-
 	/**
 	 * Sets both components of this vector.
 	 * @param x The new X component.

@@ -263,8 +263,6 @@ abstract Mat3(BaseMat3) from BaseMat3 to BaseMat3 {
 		return 'Mat3(\n  ${d[0]} ${d[3]} ${d[6]}\n  ${d[1]} ${d[4]} ${d[7]}\n  ${d[2]} ${d[5]} ${d[8]}\n)';
 	}
 
-	// ── In-place mutating methods ────────────────────────────────────────────
-
 	/**
 	 * Sets all nine elements of this matrix from individual component values.
 	 * Parameters follow mathematical notation (row, col).

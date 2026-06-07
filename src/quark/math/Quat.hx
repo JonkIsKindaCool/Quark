@@ -374,8 +374,6 @@ abstract Quat(BaseQuat) from BaseQuat to BaseQuat {
 	public inline function toString():String
 		return 'Quat(${this.x}, ${this.y}, ${this.z}, ${this.w})';
 
-	// ── In-place mutating methods ────────────────────────────────────────────
-
 	/**
 	 * Sets all four components of this quaternion.
 	 * @param x The X (imaginary i) component.
