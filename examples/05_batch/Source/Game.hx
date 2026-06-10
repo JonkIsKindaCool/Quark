@@ -9,7 +9,7 @@ import lime.graphics.Image;
 import lime.utils.UInt32Array;
 import lime.utils.Float32Array;
 import lime.graphics.opengl.GL;
-import quark.graphics.Shader;
+import quark.graphics.GLShader;
 import quark.utils.Color;
 import lime.graphics.RenderContext;
 import quark.app.App;

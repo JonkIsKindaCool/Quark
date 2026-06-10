@@ -4,7 +4,7 @@ package quark.graphics.vertex;
  * Describes a single vertex attribute within a vertex layout.
  *
  * A vertex attribute defines how a specific piece of vertex data
- * is interpreted by the GPU and mapped to a shader input.
+ * is interpreted by the GPU and mapped to a GLShader input.
  *
  * Examples include:
  * - Position (vec2, vec3, vec4)
@@ -16,7 +16,7 @@ package quark.graphics.vertex;
 typedef VertexAttribute = {
 
 	/**
-	 * Attribute name as declared in the shader.
+	 * Attribute name as declared in the GLShader.
 	 *
 	 * Example:
 	 * ```glsl

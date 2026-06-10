@@ -6,14 +6,14 @@ import lime.utils.Float32Array;
 import lime.utils.UInt32Array;
 import quark.app.App;
 import quark.utils.Color;
-import quark.graphics.Shader;
+import quark.graphics.GLShader;
 import quark.graphics.buffer.VertexBuffer;
 import quark.graphics.buffer.IndexBuffer;
 import quark.graphics.vertex.VertexArray;
 import quark.graphics.vertex.VertexLayout;
 
 class Game extends App {
-	var shader:Shader;
+	var shader:GLShader;
 
 	var vao:VertexArray;
 	var vbo:VertexBuffer;
@@ -45,7 +45,7 @@ class Game extends App {
 			FragColor = vColor;
 		}";
 
-		shader = new Shader(vertexSource, fragmentSource);
+		shader = new GLShader(vertexSource, fragmentSource);
 
 		vbo = new VertexBuffer(new Float32Array([
 			 0.0,  0.5, 1, 0, 0, 1,

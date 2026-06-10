@@ -81,8 +81,6 @@ class App {
 			if (!_initialized) {
 				instance.onCreate();
 
-				trace(GL);
-
 				_initialized = true;
 				return;
 			}

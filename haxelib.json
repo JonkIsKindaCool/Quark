@@ -11,9 +11,9 @@
         "cross"
     ],
     "description": "A lightweight OpenGL and WebGL abstraction layer built on top of Lime.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "classPath": "src",
-    "releasenote": "Initial release with basic OpenGL abstractions, buffers, shaders, textures, and application lifecycle callbacks.",
+    "releasenote": "Math changes.",
     "contributors": [
         "JonkIsKindaCool"
     ],

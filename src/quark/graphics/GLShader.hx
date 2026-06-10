@@ -11,15 +11,15 @@ import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLUniformLocation;
 
 /**
- * Represents an OpenGL shader program.
+ * Represents an OpenGL GLShader program.
  *
  * Provides utilities for binding the program, accessing attributes,
  * caching uniform locations and uploading uniform values.
  */
-class Shader implements IDisposable {
+class GLShader implements IDisposable {
 
 	/**
-	 * Native OpenGL shader program.
+	 * Native OpenGL GLShader program.
 	 */
 	public var program(default, null):GLProgram;
 
@@ -34,17 +34,17 @@ class Shader implements IDisposable {
 	private var attributeCache:Map<String, Int>;
 
 	/**
-	 * Creates and links a shader program from GLSL source code.
+	 * Creates and links a GLShader program from GLSL source code.
 	 *
-	 * @param vertexSource Vertex shader source code.
-	 * @param fragmentSource Fragment shader source code.
+	 * @param vertexSource Vertex GLShader source code.
+	 * @param fragmentSource Fragment GLShader source code.
 	 * @throws String If program creation fails.
 	 */
 	public function new(vertexSource:String, fragmentSource:String) {
 		program = GLProgram.fromSources(GL, vertexSource, fragmentSource);
 
 		if (program == null) {
-			throw "Failed to create shader program";
+			throw "Failed to create GLShader program";
 		}
 
 		uniformCache = new Map();
@@ -52,21 +52,21 @@ class Shader implements IDisposable {
 	}
 
 	/**
-	 * Binds this shader program.
+	 * Binds this GLShader program.
 	 */
 	public inline function bind():Void {
 		GL.useProgram(program);
 	}
 
 	/**
-	 * Unbinds the currently active shader program.
+	 * Unbinds the currently active GLShader program.
 	 */
 	public static inline function unbind():Void {
 		GL.useProgram(null);
 	}
 
 	/**
-	 * Releases the OpenGL resources associated with this shader.
+	 * Releases the OpenGL resources associated with this GLShader.
 	 */
 	public function dispose():Void {
 		if (program != null) {
@@ -96,7 +96,7 @@ class Shader implements IDisposable {
 	}
 
 	/**
-	 * Checks whether a uniform exists in the shader.
+	 * Checks whether a uniform exists in the GLShader.
 	 *
 	 * @param name Uniform name.
 	 * @return True if the uniform exists.

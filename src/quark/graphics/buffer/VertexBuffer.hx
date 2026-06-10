@@ -1,5 +1,6 @@
 package quark.graphics.buffer;
 
+import lime.utils.Float32Array;
 import quark.utils.IDisposable;
 import quark.app.App;
 import lime.graphics.opengl.GL;
@@ -11,7 +12,7 @@ import lime.utils.ArrayBufferView;
  *
  * Stores vertex data inside an OpenGL VBO.
  */
-class VertexBuffer implements IDisposable{
+class VertexBuffer implements IDisposable {
 	/**
 	 * Native OpenGL handle.
 	 */
@@ -82,9 +83,13 @@ class VertexBuffer implements IDisposable{
 	 * @param byteOffset Offset in bytes.
 	 * @param data Data to upload.
 	 */
-	public function setSubData(byteOffset:Int, data:ArrayBufferView):Void {
+	public function setSubData(byteOffset:Int, data:ArrayBufferView, ?length:Int):Void {
 		bind();
-		GL.bufferSubData(GL.ARRAY_BUFFER, byteOffset, data);
+		if (length != null && length > 0) {
+			GL.bufferSubData(GL.ARRAY_BUFFER, byteOffset, data, 0, length * 4);
+		} else {
+			GL.bufferSubData(GL.ARRAY_BUFFER, byteOffset, data);
+		}
 	}
 
 	/**

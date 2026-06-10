@@ -10,7 +10,7 @@ import quark.app.App;
 import quark.math.Mat4;
 import quark.math.Vec3;
 import quark.utils.Color;
-import quark.graphics.Shader;
+import quark.graphics.GLShader;
 import quark.graphics.Texture;
 import quark.graphics.buffer.IndexBuffer;
 import quark.graphics.buffer.VertexBuffer;
@@ -18,7 +18,7 @@ import quark.graphics.vertex.VertexArray;
 import quark.graphics.vertex.VertexLayout;
 
 class Game extends App {
-	var shader:Shader;
+	var GLShader:GLShader;
 
 	var vao:VertexArray;
 	var vbo:VertexBuffer;

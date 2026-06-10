@@ -9,7 +9,7 @@ import quark.app.App;
 import quark.math.Rect;
 import quark.math.Vec2;
 
-import quark.graphics.Shader;
+import quark.graphics.GLShader;
 import quark.graphics.Texture;
 
 import quark.graphics.buffer.BufferUsage;
@@ -27,7 +27,7 @@ class Batcher {
 	private static inline var INDICES_PER_QUAD:Int = 6;
 	private static inline var FLOATS_PER_VERTEX:Int = 4;
 
-	private static var _shader:Shader;
+	private static var _shader:GLShader;
 
 	private static var _vao:VertexArray;
 	private static var _vbo:VertexBuffer;
@@ -69,7 +69,7 @@ class Batcher {
 			FragColor = texture(tex, ouv);
 		}";
 
-		_shader = new Shader(
+		_shader = new GLShader(
 			vertSrc,
 			fragSrc
 		);

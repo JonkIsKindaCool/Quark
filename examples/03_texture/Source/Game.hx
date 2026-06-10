@@ -7,7 +7,7 @@ import lime.utils.Float32Array;
 import lime.utils.UInt32Array;
 import quark.app.App;
 import quark.utils.Color;
-import quark.graphics.Shader;
+import quark.graphics.GLShader;
 import quark.graphics.Texture;
 import quark.graphics.buffer.VertexBuffer;
 import quark.graphics.buffer.IndexBuffer;
@@ -15,7 +15,7 @@ import quark.graphics.vertex.VertexArray;
 import quark.graphics.vertex.VertexLayout;
 
 class Game extends App {
-	var shader:Shader;
+	var GLShader:GLShader;
 
 	var vao:VertexArray;
 	var vbo:VertexBuffer;
@@ -52,7 +52,7 @@ class Game extends App {
 			FragColor = texture(tex, ouv);
 		}";
 
-			shader = new Shader(vertSrc, fragSrc);
+			GLShader = new GLShader(vertSrc, fragSrc);
 
 			vbo = new VertexBuffer(new Float32Array([
 				-0.5, -0.5, 0, 1,
@@ -86,10 +86,10 @@ class Game extends App {
 		if (texture == null)
 			return;
 
-		shader.bind();
+		GLShader.bind();
 
 		texture.bind(0);
-		shader.setTexture("tex", 0);
+		GLShader.setTexture("tex", 0);
 
 		vao.bind();
 
@@ -113,7 +113,7 @@ class Game extends App {
 		if (ibo != null)
 			ibo.dispose();
 
-		if (shader != null)
-			shader.dispose();
+		if (GLShader != null)
+			GLShader.dispose();
 	}
 }

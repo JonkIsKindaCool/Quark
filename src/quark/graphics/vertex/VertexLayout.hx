@@ -6,7 +6,7 @@ import quark.graphics.vertex.VertexAttributeType;
  * Describes the structure of a vertex.
  *
  * A VertexLayout defines the order, size and type of attributes
- * stored in a vertex buffer and how they map to shader inputs.
+ * stored in a vertex buffer and how they map to GLShader inputs.
  *
  * The layout stride is automatically calculated from all attributes.
  */
